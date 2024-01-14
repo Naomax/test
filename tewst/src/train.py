@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-import pybulletgym.envs
+import myenv
 
 from agent.policy_estimator import PolicyEstimator
 from agent.value_estimator import ValueEstimator
@@ -80,9 +80,11 @@ def visualize_history(csv_path,
 
 
 def train():
-    env = gym.make('Walker2DPyBulletEnv-v0')
-    dim_state = env.env.observation_space.shape[0]
-    dim_action = env.env.action_space.shape[0]
+    env = gym.make('myenv-v0')
+    print("observation", env.observation_space.shape)
+    print("action", env.action_space.shape)
+    dim_state = env.observation_space.shape
+    dim_action = env.action_space.shape
 
     policy_estimator = PolicyEstimator(
         dim_state=dim_state, dim_action=dim_action)
@@ -94,8 +96,8 @@ def train():
         _train(sess, env, policy_estimator,
                value_estimator)
 
-
 def _train(sess, env, policy_estimator, value_estimator):
+    print("hello")
     # 結果を出力するディレクトリのpath
     result_dir = './result/walker2d/{now_str}' \
                  .format(now_str=now_str(str_format='%Y%m%d_%H%M%S'))
@@ -127,7 +129,7 @@ def _train(sess, env, policy_estimator, value_estimator):
     print('start_episodes...')
     # 数万episodeの繰り返し
     for i_episode in range(1, num_episodes + 1):
-        state = env.reset()
+        state = env.reset("NAND2P4")
         episode = []
         score = 0
         steps = 0
@@ -136,6 +138,7 @@ def _train(sess, env, policy_estimator, value_estimator):
             steps += 1
             action = policy_estimator.predict(
                 sess, state)
+            print(action)
             state_new, r, done, _ = env.step(action)
             score += r
 
